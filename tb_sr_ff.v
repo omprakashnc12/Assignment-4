@@ -1,29 +1,28 @@
 `timescale 1ns/1ps
 
-module jk_ff(input j, k, clk, rst, output reg q);
+module sr_ff(input s, r, clk, rst, output reg q);
 always @(posedge clk or posedge rst) begin
     if (rst)        q <= 1'b0;
-    else if (~j & ~k) q <= q;
-    else if (~j & k)  q <= 1'b0;
-    else if (j & ~k)  q <= 1'b1;
-    else              q <= ~q;
+    else if (s&r)  q <= q;      
+    else if (s)    q <= 1'b1;
+    else if (r)    q <= 1'b0;
 end
 endmodule
 
-module tb_jk_ff;
-reg j, k, clk, rst;
+module tb_sr_ff;
+reg s, r, clk, rst;
 wire q;
 
-jk_ff dut(j, k, clk, rst, q);
+sr_ff dut(s, r, clk, rst, q);
 
 always #5 clk = ~clk;
 
 initial begin
-    clk=0; rst=1; j=0; k=0;
+    clk=0; rst=1; s=0; r=0;
     #10 rst=0;
-    #10 j=1; k=0;
-    #10 j=0; k=1;
-    #10 j=1; k=1;
+    #10 s=1; r=0;
+    #10 s=0; r=1;
+    #10 s=0; r=0;
     #20 $finish;
 end
 endmodule
